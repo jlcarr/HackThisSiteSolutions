@@ -12,3 +12,6 @@ Inspect the source code of the form and you should see a comment of the form:
 
 Simply paste in the given password.
 
+#### Level 2
+The hint says the password comparison file hasn't been uploaded, so if there's not password to compare to, simply press submit!
+
