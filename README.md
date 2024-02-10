@@ -29,3 +29,6 @@ document.querySelector('input[name="to"]').setAttribute('value', '{your-email}')
 
 Note you can only use the email you used to register with HackThisSite.
 An email will be sent to your with the password.
+
+#### Level 5
+This level can be solved the same as the previous level. Looking into it, it turns out the difference between the two is this level has CORS, so it cannot be solved by making your own local copy of the HTML page.
