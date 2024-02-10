@@ -32,3 +32,13 @@ An email will be sent to your with the password.
 
 #### Level 5
 This level can be solved the same as the previous level. Looking into it, it turns out the difference between the two is this level has CORS, so it cannot be solved by making your own local copy of the HTML page.
+
+#### Level 6
+Playing with the encryption system, it's pretty quick to see it works by incrementing the ASCII values of each character by its position in the string.
+We can determine this by starting entering single characters, then 2 characters and seeing the next one is incremented, and so forth.
+We can determine it's ASCII based by inputing `0z`, `0Z`, or `09` and see they increment to `0{`, `0[` and `0:` respectively.
+We can invert the encrypted password with 1 line of Python:
+
+```Python
+''.join(chr(ord(c)-i) for i,c in enumerate(pw))
+```
