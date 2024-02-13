@@ -42,3 +42,25 @@ We can invert the encrypted password with 1 line of Python:
 ```Python
 ''.join(chr(ord(c)-i) for i,c in enumerate(pw))
 ```
+
+#### Level 7
+This level allows us to inject unix commands by appending to the input the the `cal` command.
+The first thing we can do is see what other files are in the directory by injecting the `ls` command like so:
+
+```bash
+2000; ls -la
+```
+
+which shows us these files:
+
+```
+index.php
+level7.php
+cal.pl
+.
+..
+k1kh31b1n55h.php
+```
+
+We can then go to this page, <https://www.hackthissite.org/missions/basic/7/k1kh31b1n55h.php>, and find the password.
+
