@@ -64,3 +64,21 @@ k1kh31b1n55h.php
 
 We can then go to this page, <https://www.hackthissite.org/missions/basic/7/k1kh31b1n55h.php>, and find the password.
 
+#### Level 8
+Here we have another chance to use Unix command injection, this time via an unprotected SSI (Server Side Includes), which we are hinted at by the `.shtml` page extension.
+We can find a guide to injection on the OWASP site here: <https://owasp.org/www-community/attacks/Server-Side_Includes_(SSI)_Injection>
+Now we see the page we're directed to is <https://www.hackthissite.org/missions/basic/8/tmp/{random}.shtml>, and we are told the password in `/var/www/hackthissite.org/html/missions/basic/8/` so we just need to check one directory higher.
+The can just injection:
+
+```SSI
+<!--#exec cmd="ls .." -->
+```
+
+Which will show is the files:
+
+```
+au12ha39vc.php index.php level8.php tmp
+```
+
+We can finish of by going to <https://www.hackthissite.org/missions/basic/8/au12ha39vc.php> to see the password.
+
