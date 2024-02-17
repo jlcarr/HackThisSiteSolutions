@@ -98,3 +98,13 @@ index.php p91e283zc3.php
 
 We can finish off by going to <https://www.hackthissite.org/missions/basic/9/p91e283zc3.php> to see the password.
 
+#### Level 10
+This level's page doesn't provide much, but the description says we should use Javascript and there is a "more temporary and "hidden" approach to authenticating users".
+The final piece to the puzzle is to inspect the request made after submitting to the password form, and we can see in the Cookie field that we have `level10_authorized=no;`
+So we can try to override this with JavaScript inb the Console before submitting:
+
+```JavScript
+document.cookie = "level10_authorized=no;"
+```
+
+Now submitting any password will work.
