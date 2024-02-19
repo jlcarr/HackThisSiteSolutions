@@ -108,3 +108,15 @@ document.cookie = "level10_authorized=no;"
 ```
 
 Now submitting any password will work.
+
+#### Level 11
+This level is fairly cryptic.
+The inital page has a comment saying `<!--We even have our own collection - if you could find it!-->` and also says a random song is the best.
+If we refresh the page we will see a different song name. If we Google each of these song's we'll see they are all by Elton John.
+So we need to find the site's collection of Elton John song.
+Well, as it turns out we can access the `e` directory at <https://www.hackthissite.org/missions/basic/11/e/>, and can contnue forward to <https://www.hackthissite.org/missions/basic/11/e/l/t/o/n/> at which point we see nothing left in the directory.
+It's at this point we need the level's hint that it's about Apache.
+If we Google "Apache hidden files" we quickly stumble upon `.htaccess` files, and indeed <https://www.hackthissite.org/missions/basic/11/e/l/t/o/n/.htaccess> exists.
+It mention a file of the format `DaAnswer.*` and indeed going to  <https://www.hackthissite.org/missions/basic/11/e/l/t/o/n/DaAnswer> or <https://www.hackthissite.org/missions/basic/11/e/l/t/o/n/DaAnswer.txt> gives us the message `The answer is short! Just look a little harder.`
+Reading between the lines, the answer is literally `short`.
+But where to put it? Well in all the other challenges is was the `index.php`, and indeed <https://www.hackthissite.org/missions/basic/11/index.php> has a password submit form where we can put the answer.
