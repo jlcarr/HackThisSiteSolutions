@@ -135,3 +135,9 @@ Like so:
 
 The level will actually accept `6` to consider it hacked, but in theory we'd keep trying larger and larger values until we finally have a big enough influence on the result.
 Afterwards pressing the "vote!" button will complete the level.
+
+#### Level 2: Chicago American Nazi Party
+Looking at the source of the first page, we can see there is a hidden link to an "update" page, this is clearly where we should go to gain access to the site.
+We are brought to a login page, and inspecting the source code here shows nothing glaring. Trying typical username/password combinations doesn't work either. So since this is our only point of entry, makes sense to try an injection attack.
+Giving a single quote, `'`, to the username field causes a message about an SQL error to appear, so this confirms we're on the right track.
+The classic `' OR 1=1 --` indeed solves the level.
