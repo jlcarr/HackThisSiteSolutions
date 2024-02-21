@@ -2,7 +2,7 @@
 Solutions to the Hack This Site challenges.
 
 ## Solutions
-### Basic
+### Basic Challenges
 #### Level 1(the idiot test)
 Inspect the source code of the form and you should see a comment of the form:
 
@@ -120,3 +120,18 @@ If we Google "Apache hidden files" we quickly stumble upon `.htaccess` files, an
 It mention a file of the format `DaAnswer.*` and indeed going to  <https://www.hackthissite.org/missions/basic/11/e/l/t/o/n/DaAnswer> or <https://www.hackthissite.org/missions/basic/11/e/l/t/o/n/DaAnswer.txt> gives us the message `The answer is short! Just look a little harder.`
 Reading between the lines, the answer is literally `short`.
 But where to put it? Well in all the other challenges is was the `index.php`, and indeed <https://www.hackthissite.org/missions/basic/11/index.php> has a password submit form where we can put the answer.
+
+
+### Realistic Challenges
+#### Level 1: Uncle Arnold's Local Band Review
+We can see that band we want to promote, Raging Inferno, has the lowest average rating.
+Judging from the trail of decimal places, the rating is probably a simple mean of all votes submitted.
+The vote box gives us values `1`-`5`, but we can simply change the value of the input to a much larger value to artificially inflate the rating beyong a single vote's weight.
+Like so:
+
+```HTML
+<option value="6">1</option>
+```
+
+The level will actually accept `6` to consider it hacked, but in theory we'd keep trying larger and larger values until we finally have a big enough influence on the result.
+Afterwards pressing the "vote!" button will complete the level.
