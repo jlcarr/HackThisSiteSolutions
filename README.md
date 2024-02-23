@@ -103,7 +103,7 @@ This level's page doesn't provide much, but the description says we should use J
 The final piece to the puzzle is to inspect the request made after submitting to the password form, and we can see in the Cookie field that we have `level10_authorized=no;`
 So we can try to override this with JavaScript inb the Console before submitting:
 
-```JavScript
+```JavaScript
 document.cookie = "level10_authorized=no;"
 ```
 
@@ -141,3 +141,11 @@ Looking at the source of the first page, we can see there is a hidden link to an
 We are brought to a login page, and inspecting the source code here shows nothing glaring. Trying typical username/password combinations doesn't work either. So since this is our only point of entry, makes sense to try an injection attack.
 Giving a single quote, `'`, to the username field causes a message about an SQL error to appear, so this confirms we're on the right track.
 The classic `' OR 1=1 --` indeed solves the level.
+
+#### Level 3: Peace Poetry: HACKED
+Looking at the source code, there is a comment saying the old page has been moved to <https://www.hackthissite.org/missions/realistic/3/oldindex.html> so we should go there: perhaps we can re-hack the site in a similar way.
+On this page we see there is a place to both read and submit poetry, this is an entry point. <https://www.hackthissite.org/missions/realistic/3/submitpoems.php>
+On the page we see a note "Poems will be stored online immediately but will not be listed on the main poetry page until it has a chance to be looked at." This implies a file will be made and stored on the server. Perhaps we can replace the `index.html`.
+Using `index.html` as the name doesn't work, but they're proably stored in a subdirectory, so `../index.html` does indeed work!
+The last piece is we need to copy the source code of the `oldindex.html` page into the body that is written to the new `index.html`.
+
