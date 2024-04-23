@@ -12,12 +12,15 @@ Inspect the source code of the form and you should see a comment of the form:
 
 Simply paste in the given password.
 
+
 #### Level 2
 The hint says the password comparison file hasn't been uploaded, so if there's not password to compare to, simply press submit!
+
 
 #### Level 3
 Looking at the source code we can see that the name of the file being used for the comparison, `password.php`, is given as a hidden input of the form.
 We can go to this file and see it is not protected, and read the password: <https://www.hackthissite.org/missions/basic/3/password.php>
+
 
 #### Level 4
 Looking at the source code we can see the "Send password to Sam" button is part of a form with a hidden input with Sam's email, sam@hackthissite.org.
@@ -30,8 +33,10 @@ document.querySelector('input[name="to"]').setAttribute('value', '{your-email}')
 Note you can only use the email you used to register with HackThisSite.
 An email will be sent to your with the password.
 
+
 #### Level 5
 This level can be solved the same as the previous level. Looking into it, it turns out the difference between the two is this level has CORS, so it cannot be solved by making your own local copy of the HTML page.
+
 
 #### Level 6
 Playing with the encryption system, it's pretty quick to see it works by incrementing the ASCII values of each character by its position in the string.
@@ -42,6 +47,7 @@ We can invert the encrypted password with 1 line of Python:
 ```Python
 ''.join(chr(ord(c)-i) for i,c in enumerate(pw))
 ```
+
 
 #### Level 7
 This level allows us to inject unix commands by appending to the input the the `cal` command.
@@ -64,6 +70,7 @@ k1kh31b1n55h.php
 
 We can then go to this page, <https://www.hackthissite.org/missions/basic/7/k1kh31b1n55h.php>, and find the password.
 
+
 #### Level 8
 Here we have another chance to use Unix command injection, this time via an unprotected SSI (Server Side Includes), which we are hinted at by the `.shtml` page extension.
 We can find a guide to injection on the OWASP site here: <https://owasp.org/www-community/attacks/Server-Side_Includes_(SSI)_Injection>
@@ -82,6 +89,7 @@ au12ha39vc.php index.php level8.php tmp
 
 We can finish off by going to <https://www.hackthissite.org/missions/basic/8/au12ha39vc.php> to see the password.
 
+
 #### Level 9
 This level hints that it is very similar to the previous level, and in fact we should use the vulnerability in the previous level's page to solve it.
 We need to go back to Level 8 and do a different injection to list the directory of level 9:
@@ -98,6 +106,7 @@ index.php p91e283zc3.php
 
 We can finish off by going to <https://www.hackthissite.org/missions/basic/9/p91e283zc3.php> to see the password.
 
+
 #### Level 10
 This level's page doesn't provide much, but the description says we should use Javascript and there is a "more temporary and "hidden" approach to authenticating users".
 The final piece to the puzzle is to inspect the request made after submitting to the password form, and we can see in the Cookie field that we have `level10_authorized=no;`
@@ -108,6 +117,7 @@ document.cookie = "level10_authorized=no;"
 ```
 
 Now submitting any password will work.
+
 
 #### Level 11
 This level is fairly cryptic.
@@ -142,12 +152,14 @@ We are brought to a login page, and inspecting the source code here shows nothin
 Giving a single quote, `'`, to the username field causes a message about an SQL error to appear, so this confirms we're on the right track.
 The classic `' OR 1=1 --` indeed solves the level.
 
+
 #### Level 3: Peace Poetry: HACKED
 Looking at the source code, there is a comment saying the old page has been moved to <https://www.hackthissite.org/missions/realistic/3/oldindex.html> so we should go there: perhaps we can re-hack the site in a similar way.
 On this page we see there is a place to both read and submit poetry, this is an entry point. <https://www.hackthissite.org/missions/realistic/3/submitpoems.php>
 On the page we see a note "Poems will be stored online immediately but will not be listed on the main poetry page until it has a chance to be looked at." This implies a file will be made and stored on the server. Perhaps we can replace the `index.html`.
 Using `index.html` as the name doesn't work, but they're proably stored in a subdirectory, so `../index.html` does indeed work!
 The last piece is we need to copy the source code of the `oldindex.html` page into the body that is written to the new `index.html`.
+
 
 #### Level 4: Fischer's Animal Products
 The first thing we see on the page is an input form for an email, so this seems like a good place to start trying injection attacks.
@@ -195,4 +207,55 @@ We can finish off easily by dumping the `email` table:
 <https://www.hackthissite.org/missions/realistic/4/products.php?category=1%20OR%201%3D1%20UNION%20ALL%20SELECT%20NULL%2Cemail%2CNULL%2CNULL%20FROM%20email>
 
 After which we just need to copy the emails, and send them as a DM to the user `SaveTheWhales` after doing so the level will be complete.
+
+
+#### Level 5: Damn Telemarketers!
+The homepage has a link directly to the database login page, <https://www.hackthissite.org/missions/realistic/5/submit.html>.
+
+The news page also contains a hint, <https://www.hackthissite.org/missions/realistic/5/news.htm>.
+`9/15/03 - Google was grabbing links it shouldn't be so I have taken extra precautions.`
+The standard way to direct Google's webcrawlers is with a `robots.txt`, so we can check it: <https://www.hackthissite.org/missions/realistic/5/robots.txt>.
+It shows it doesn't want the webcrawler to check `/lib` and `/secret`.
+
+<https://www.hackthissite.org/missions/realistic/5/lib/> shows there's a `hash` file which is a binary we can download. This must be the hash function used to hash the password.
+
+<https://www.hackthissite.org/missions/realistic/5/secret/> shows an `admin.php` page which is what checks the database login, and `admin.bak.php` has the following message:
+`error matching hash d27509ba0765da2a8cce486df4133b99`
+
+So this is the hash our password needs to match. But how does the hashing algorithm work so we can crack it?
+We can figure out what it is by extracting the strings from the `hash` binary:
+
+```bash
+strings hash
+```
+
+amongst the results we see:
+
+```
+md4.c
+md4driver.c
+MD4 time trial. Processing 1 million 64-character blocks...
+MD4 test suite results:
+```
+
+So it's an MD4 hash, <https://en.wikipedia.org/wiki/MD4>, which is known to be severely compromised and easy to hack.
+We can use tools such as [hashcat](https://hashcat.net/hashcat/) or [John the Ripper](https://www.openwall.com/john/) to crack the password now.
+
+Here I'll use John the Ripper.
+
+```Bash
+echo 'd27509ba0765da2a8cce486df4133b99' > hash-5.txt
+john hash-5.txt --format=Raw-MD4
+john hash-5.txt --format=Raw-MD4 --show
+```
+
+Which should take a few seconds on the cracking step, then show something like:
+
+```
+?:c1729
+
+1 password hash cracked, 0 left
+```
+
+Meaning that `c1729` is the password.
 
