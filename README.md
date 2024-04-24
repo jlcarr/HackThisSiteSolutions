@@ -259,3 +259,42 @@ Which should take a few seconds on the cracking step, then show something like:
 
 Meaning that `c1729` is the password.
 
+
+#### Level 6: ToxiCo Industrial Chemicals
+We're given some ciphertext and a php page where we can interact with the encryption algorithm as a black box. Pretty straightforward: we need to reverse engineer the encryption algorithm and then crack it.
+
+Here's how I explored the encryption algorithms and ended up reverse engineering it:
+
+Firstly I started with giving empty inputs and would the result was also empty. Next I tried a single character, which resulted in 3 numbers returned, 2 characters resulted in 6 numbers returned and so, on implying each character was encoded to 3 numbers. I also noticed that re-submitting the same plaintext and password would result in different ciphertext each time: this means there's randomness in the encryption, so we'll need to find something common about the different outputs.
+For this I took several samples of plaintext 'a' with password ''. I Figured there must be some mapping from the triplets of numbers to the ascii value of 'a', which is 97. I was going to brute force over all combinations of binary operators between the 3 numbers and their orderings, however I noticed from their binary representations that they were missing the leading digit, so I tried summing them all and it worked.
+From there I tried more letters in the plaintext with blank password, and found the pattern continued. Next I had to find the effect of the password. I tried plaintext 'a' with password 'a', which produced a triplet summing to 194: i.e. 97 * 2. From there I quickly found all the ascii values of the password are summed and added onto each character: This means reordering the letters, incrementing one and decrementing another has no effect on the value of the password.
+
+I now had the completed the reverse engineering of the encryption algorithm, and could write a script to decode a ciphertext given a password, and futhermore could brute force the key easily.
+
+By finding the min and max number in the ciphertext (after summing all triplets), we have a range over which we can search for feasible keys. To check a key we decrypt and check the number of alphabetical characters and spaces. The highest scoring text will be the correct plaintext.
+
+Here is the script to do so:
+
+```python
+ciphertext = list(map(int,ciphertext.replace('\n','').split('.')))
+ciphertext = [sum(ciphertext[i:i+3]) for i in range(0,len(ciphertext),3)]
+
+maxkey = None
+maxtext = 0
+for key in range(min(ciphertext)-ord('z'), max(ciphertext)):
+    textcount = sum(
+        ord('a') <= c-key <= ord('z') or 
+        ord('A') <= c-key <= ord('Z') or 
+        c-key == ord(' ') 
+        for c in ciphertext)
+    if textcount > maxtext:
+        maxtext = textcount
+        maxkey = key
+print(''.join(chr(c-maxkey) for c in ciphertext))
+```
+
+This is also implemented in the Realistic-6.ipynb Jupyter Notebook.
+
+After getting the plaintext, we need to copy it and send it as a DM to the user `ToxiCo_Watch` after doing so the level will be complete.
+
+
