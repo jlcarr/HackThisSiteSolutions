@@ -243,7 +243,7 @@ We can use tools such as [hashcat](https://hashcat.net/hashcat/) or [John the Ri
 
 Here I'll use John the Ripper.
 
-```Bash
+```bash
 echo 'd27509ba0765da2a8cce486df4133b99' > hash-5.txt
 john hash-5.txt --format=Raw-MD4
 john hash-5.txt --format=Raw-MD4 --show
@@ -298,3 +298,31 @@ This is also implemented in the Realistic-6.ipynb Jupyter Notebook.
 After getting the plaintext, we need to copy it and send it as a DM to the user `ToxiCo_Watch` after doing so the level will be complete.
 
 
+#### Level 7: What's Right For America
+We are asked to gain access to the admin page, which is somewhere on the site. Exploring the site we quickly come across pages using a php script which seems to be reading text files to find images to show.
+
+For example <https://www.hackthissite.org/missions/realistic/7/showimages.php?file=patriot.txt>, and looking at <https://www.hackthissite.org/missions/realistic/7/patriot.txt> gives use a list of the paths to the files shown in the previous page.
+
+We see they all are under the path directory `/images`, and if we go to <https://www.hackthissite.org/missions/realistic/7/images/> we can see a list of files, including all the images, and also and `admin/` subdirectory. However going to <https://www.hackthissite.org/missions/realistic/7/images/admin> asks us for a password.
+
+We might remember from previous challenges how Apache servers hide directories using `.htaccess` files, but what about password protecting them? If we Google Apache protect directory, we'll quickly stumble upon `.htpasswd` files: if we could get the contents we could get the username and password.
+
+Well what about using the `showimages.php` script to read the contents? We can craft our url: <https://www.hackthissite.org/missions/realistic/7/showimages.php?file=images/admin/.htpasswd> and see that each of the broken images rendered on the page's src tag is now filled with a different line from the file. This gives us `administrator:$1$AAODv...$gXPqGkIO3Cu6dnclE/sok1`. Looking at their [documentation](https://httpd.apache.org/docs/2.4/programs/htpasswd.html), the password is hashed, usually using MD5, or SHA1, so we'll need to crack the hash.
+
+If we copy the contents directly into a .txt file we can run John The Ripper on it, which will identify the hash type automatically and crack it:
+
+```bash
+echo "administrator:$1$AAODv...$gXPqGkIO3Cu6dnclE/sok1\n" > hash-7.txt
+john hash-7.txt
+john hash-7.txt --show
+```
+
+Which will give a result of something like
+
+```
+shadow           (administrator)
+```
+
+Meaning the password is `shadow`.
+
+We can now go back to <https://www.hackthissite.org/missions/realistic/7/images/admin>, enter the username and password, and the challenge will be complete.
